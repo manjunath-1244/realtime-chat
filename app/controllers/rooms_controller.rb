@@ -14,6 +14,9 @@ class RoomsController < ApplicationController
     end
 
     @messages = @room.messages.includes(:user).order(:created_at)
+    if params[:query].present?
+      @messages = @messages.where("content ILIKE ?", "%#{params[:query]}%")
+    end
     @message = Message.new
   end
 

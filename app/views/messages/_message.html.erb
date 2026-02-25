@@ -2,9 +2,42 @@
      class="message"
      data-user-id="<%= message.user_id %>">
   <div class="bubble">
-    <strong>
-      <%= message.user.name.presence || message.user.email %>
-    </strong><br>
-    <%= message.content %>
+    <% display_name = message.user.name.presence || message.user.email %>
+    <% initials = display_name.to_s.split(/\s+/).first(2).map { |part| part[0] }.join.upcase %>
+
+    <div class="message-head">
+      <div class="message-avatar"><%= initials.presence || "U" %></div>
+      <div class="message-meta">
+        <div class="message-author"><%= display_name %></div>
+        <div class="message-time"><%= message.created_at.strftime("%b %-d, %I:%M %p") %></div>
+      </div>
+    </div>
+
+    <% if message.content.present? %>
+      <div class="message-body">
+        <%= simple_format(h(message.content), {}, wrapper_tag: "p") %>
+      </div>
+    <% end %>
+
+    <% if message.room.users.include?(current_user) %>
+      <%= button_to "📌 Pin",
+          pin_room_message_path(message.room, message),
+          method: :patch,
+          class: "btn btn-secondary" %>
+    <% end %>
+
+    <% if message.file.attached? %>
+      <div class="attachment-card">
+        <% if message.file.content_type&.start_with?("image/") %>
+          <%= image_tag url_for(message.file), class: "attachment-image", alt: message.file.filename.to_s %>
+        <% else %>
+          <%= link_to message.file.filename.to_s, url_for(message.file), target: "_blank", class: "attachment-link" %>
+        <% end %>
+        <div class="attachment-meta">
+          <span><%= message.file.filename.to_s %></span>
+          <span><%= number_to_human_size(message.file.byte_size) %></span>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>

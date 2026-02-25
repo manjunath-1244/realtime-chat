@@ -26,6 +26,22 @@ class MessagesController < ApplicationController
   end
 end
 
+
+def pin
+  @room = Room.find(params[:room_id])
+  @message = @room.messages.find(params[:id])
+
+  return redirect_to rooms_path, alert: "Access denied" unless @room.users.include?(current_user)
+
+  # Unpin all other messages in this room
+  @room.messages.update_all(pinned: false)
+
+  # Pin selected message
+  @message.update(pinned: true)
+
+  redirect_to @room, notice: "Message pinned successfully"
+end
+
 def destroy
   @room = Room.find(params[:room_id])
   @message = @room.messages.find(params[:id])
@@ -45,7 +61,6 @@ end
   private
 
   def message_params
-    params.require(:message).permit(:content, :message_type)
+    params.require(:message).permit(:content, :message_type, :file)
   end
 end
-

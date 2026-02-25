@@ -1,19 +1,38 @@
 <div class="container">
   <%= turbo_stream_from @room %>
-    
+
   <%= link_to "← Back to Rooms", rooms_path, class: "btn btn-secondary" %>
 
   <h2><%= @room.name %></h2>
-  
+
+  <% pinned_message = @room.messages.find_by(pinned: true) %>
+
+  <% if pinned_message.present? %>
+    <div class="pinned-message alert alert-info">
+      <strong>📌 Pinned Message:</strong>
+      <%= pinned_message.content %>
+    </div>
+  <% end %>
+
+  <%= form_with url: room_path(@room), method: :get, local: true, html: { class: "search-form" } do |f| %>
+    <%= f.text_field :query,
+      value: params[:query],
+      placeholder: "Search messages by keyword...",
+      class: "search-input" %>
+    <%= f.submit "Search", class: "btn btn-primary search-btn" %>
+    <% if params[:query].present? %>
+      <%= link_to "Clear", room_path(@room), class: "btn btn-secondary search-clear-btn" %>
+    <% end %>
+  <% end %>
+
   <div class="chat-container">
 
-    <div id="messages" 
-         class="messages" 
+    <div id="messages"
+         class="messages"
          data-controller="message-alignment"
          data-current-user-id="<%= current_user.id %>">
       <%= render @messages %>
     </div>
-
     <%= render "messages/form", room: @room, message: @message %>
 
   </div>

@@ -1,13 +1,17 @@
 <%= form_with model: [room, message],
       id: "new_message",
-      class: "message-form" do |f| %>
+      class: "message-form composer-form",
+      html: { multipart: true } do |f| %>
+  <div class="composer-input-wrap">
+    <%= f.text_field :content,
+          placeholder: "Type a message...",
+          autocomplete: "off",
+          class: "composer-input" %>
+  </div>
 
-  <%= f.text_field :content,
-        placeholder: "Type message...",
-        autocomplete: "off" %>
-
-  <%= f.hidden_field :message_type, value: "text" %>
-
-  <%= f.submit "Send", class: "btn btn-primary" %>
-
+  <div class="composer-actions">
+    <%= f.hidden_field :message_type, value: "text" %>
+    <%= f.file_field :file, class: "composer-file-input" %>
+    <%= f.submit "Send", class: "btn btn-primary composer-send-btn" %>
+  </div>
 <% end %>
