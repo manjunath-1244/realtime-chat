@@ -1,0 +1,9 @@
+<%= turbo_stream.append "messages" do %>
+  <%= render partial: "messages/message",
+        locals: { message: @message } %>
+<% end %>
+
+<%= turbo_stream.replace "new_message" do %>
+  <%= render partial: "messages/form",
+        locals: { room: @room, message: Message.new } %>
+<% end %>

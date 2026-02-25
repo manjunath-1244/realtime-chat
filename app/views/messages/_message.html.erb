@@ -1,0 +1,10 @@
+<div id="<%= dom_id(message) %>"
+     class="message"
+     data-user-id="<%= message.user_id %>">
+  <div class="bubble">
+    <strong>
+      <%= message.user.name.presence || message.user.email %>
+    </strong><br>
+    <%= message.content %>
+  </div>
+</div>

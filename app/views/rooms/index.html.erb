@@ -1,0 +1,34 @@
+<div class="rooms-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+  <h2 style="margin: 0;">Your Chat Rooms</h2>
+  <%= link_to "New Room +", new_room_path, class: "btn btn-primary" %>
+</div>
+
+<div class="rooms-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+  <% @rooms.each do |room| %>
+    <div class="room-card">
+      <div class="room-info">
+        <h3 style="margin: 0 0 5px 0;">
+          <%= link_to room.name, room_path(room), style: "text-decoration: none; color: inherit;" %>
+        </h3>
+        
+        <div class="badge-row">
+          <span class="member-badge">
+            👥 <%= room.room_members.count %> Members
+          </span>
+          <span class="type-badge" style="font-size: 11px; background: #f1f5f9; padding: 4px 8px; border-radius: 12px; margin-left: 5px;">
+            <%= room.room_type.capitalize %>
+          </span>
+        </div>
+      </div>
+
+      <div class="room-actions" style="display: flex; gap: 10px;">
+        <%= link_to "Enter", room_path(room), class: "btn btn-secondary" %>
+        <%= link_to "Delete",
+              room_path(room),
+              data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+              class: "btn btn-logout",
+              style: "color: #ef4444;" %>
+      </div>
+    </div>
+  <% end %>
+</div>

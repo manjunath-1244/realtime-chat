@@ -1,0 +1,13 @@
+<%= form_with model: [room, message],
+      id: "new_message",
+      class: "message-form" do |f| %>
+
+  <%= f.text_field :content,
+        placeholder: "Type message...",
+        autocomplete: "off" %>
+
+  <%= f.hidden_field :message_type, value: "text" %>
+
+  <%= f.submit "Send", class: "btn btn-primary" %>
+
+<% end %>
