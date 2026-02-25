@@ -1,6 +1,7 @@
 class RoomsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_room, only: [:show, :destroy]
+  before_action :authorize_admin!, only: [:new, :create]
 
   def index
     @rooms = current_user.rooms
@@ -61,5 +62,11 @@ class RoomsController < ApplicationController
 
   def room_params
     params.require(:room).permit(:name, :room_type)
+  end
+
+  def authorize_admin!
+    unless current_user.admin?
+      redirect_to rooms_path, alert: "Only admins can create rooms."
+    end
   end
 end

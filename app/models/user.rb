@@ -8,4 +8,6 @@ class User < ApplicationRecord
   has_many :message_reads
   has_many :message_reactions
   has_many :notifications
+
+  enum role: { user: 0, admin: 1 }
 end
