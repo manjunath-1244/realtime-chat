@@ -3,14 +3,18 @@
       class: "message-form composer-form",
       html: { multipart: true } do |f| %>
   <div class="composer-input-wrap">
-    <%= f.text_field :content,
-          placeholder: "Type a message...",
-          autocomplete: "off",
-          class: "composer-input" %>
+    <%= f.hidden_field :content, id: "composer_content" %>
+    <trix-editor input="composer_content"
+                 class="composer-trix"
+                 placeholder="Type a message..."></trix-editor>
   </div>
 
   <div class="composer-actions">
     <%= f.hidden_field :message_type, value: "text" %>
+    <%= f.datetime_local_field :scheduled_for,
+          class: "composer-schedule-input",
+          min: Time.current.strftime("%Y-%m-%dT%H:%M"),
+          title: "Schedule message (optional)" %>
     <%= f.file_field :file, class: "composer-file-input" %>
     <%= f.submit "Send", class: "btn btn-primary composer-send-btn" %>
   </div>

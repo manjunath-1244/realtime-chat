@@ -5,7 +5,7 @@
 
   <h2><%= @room.name %></h2>
 
-  <% pinned_message = @room.messages.find_by(pinned: true) %>
+  <% pinned_message = @room.messages.visible_in_room.find_by(pinned: true) %>
 
   <% if pinned_message.present? %>
     <div class="pinned-message alert alert-info">
@@ -25,13 +25,23 @@
     <% end %>
   <% end %>
 
+  <% if params[:query].present? %>
+    <div class="search-result-summary">
+      <%= @matched_message_ids.size %> result(s) found
+    </div>
+  <% end %>
+
   <div class="chat-container">
 
     <div id="messages"
          class="messages"
-         data-controller="message-alignment"
-         data-current-user-id="<%= current_user.id %>">
-      <%= render @messages %>
+         data-controller="message-alignment message-search"
+         data-current-user-id="<%= current_user.id %>"
+         data-message-search-query-value="<%= params[:query].to_s %>">
+      <%= render partial: "messages/message",
+            collection: @messages,
+            as: :message,
+            locals: { matched_ids: @matched_message_ids } %>
     </div>
     <%= render "messages/form", room: @room, message: @message %>
 

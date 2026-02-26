@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_02_26_074500) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_26_110000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -101,11 +101,15 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_26_074500) do
     t.datetime "edited_at"
     t.datetime "deleted_at"
     t.bigint "parent_id"
+    t.datetime "scheduled_for"
+    t.datetime "published_at"
     t.index ["deleted_at"], name: "index_messages_on_deleted_at"
     t.index ["parent_id"], name: "index_messages_on_parent_id"
     t.index ["parent_message_id"], name: "index_messages_on_parent_message_id"
     t.index ["pinned"], name: "index_messages_on_pinned"
+    t.index ["published_at"], name: "index_messages_on_published_at"
     t.index ["room_id"], name: "index_messages_on_room_id"
+    t.index ["scheduled_for"], name: "index_messages_on_scheduled_for"
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
 

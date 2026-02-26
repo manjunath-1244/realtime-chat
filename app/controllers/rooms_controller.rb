@@ -13,10 +13,20 @@ class RoomsController < ApplicationController
       return
     end
 
-    @messages = @room.messages.active.top_level.includes(:user, replies: :user).order(:created_at)
+    @messages = @room.messages.visible_in_room.top_level.includes(:user, replies: :user).order(:created_at)
+    @matched_message_ids = []
+
     if params[:query].present?
-      @messages = @messages.where("content ILIKE ?", "%#{params[:query]}%")
+      query = params[:query].to_s.strip
+      if query.present?
+        escaped_query = ActiveRecord::Base.sanitize_sql_like(query)
+        @matched_message_ids = @room.messages
+                                    .visible_in_room
+                                    .where("content ILIKE ?", "%#{escaped_query}%")
+                                    .pluck(:id)
+      end
     end
+
     @message = Message.new
   end
 

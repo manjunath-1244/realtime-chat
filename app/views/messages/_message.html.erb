@@ -1,4 +1,6 @@
 <% editing = local_assigns.fetch(:editing, false) %>
+<% matched_ids = local_assigns.fetch(:matched_ids, []) %>
+<% is_match = matched_ids.include?(message.id) %>
 <%
   viewer = local_assigns[:viewer]
   if viewer.nil? && defined?(request) && request&.env&.key?("warden")
@@ -9,8 +11,9 @@
 %>
 
 <div id="<%= dom_id(message) %>"
-     class="message"
-     data-user-id="<%= message.user_id %>">
+     class="message <%= 'search-hit' if is_match %>"
+     data-user-id="<%= message.user_id %>"
+     data-search-match="<%= is_match %>">
   <div class="bubble">
     <% display_name = message.user.name.presence || message.user.email %>
     <% initials = display_name.to_s.split(/\s+/).first(2).map { |part| part[0] }.join.upcase %>
@@ -28,12 +31,13 @@
         <details class="reply-details">
           <summary class="message-tool-btn">Reply</summary>
           <%= form_with model: [message.room, Message.new], class: "reply-form", html: { multipart: true } do |f| %>
+            <% reply_input_id = "reply_content_#{message.id}" %>
             <%= f.hidden_field :parent_id, value: message.id %>
             <%= f.hidden_field :message_type, value: "text" %>
-            <%= f.text_field :content,
-                  placeholder: "Write a reply...",
-                  autocomplete: "off",
-                  class: "reply-input" %>
+            <%= f.hidden_field :content, id: reply_input_id %>
+            <trix-editor input="<%= reply_input_id %>"
+                         class="reply-trix"
+                         placeholder="Write a reply..."></trix-editor>
             <%= f.submit "Send", class: "message-tool-btn message-tool-btn-pin" %>
           <% end %>
         </details>
@@ -63,10 +67,9 @@
     <% if editing %>
       <%= form_with model: [message.room, message],
             class: "edit-message-form" do |f| %>
-        <%= f.text_area :content,
-              value: message.content,
-              rows: 3,
-              class: "edit-message-input" %>
+        <% edit_input_id = "edit_content_#{message.id}" %>
+        <%= f.hidden_field :content, id: edit_input_id, value: message.content %>
+        <trix-editor input="<%= edit_input_id %>" class="edit-message-trix"></trix-editor>
         <div class="edit-message-actions">
           <%= f.submit "Save", class: "btn btn-primary edit-message-save" %>
           <%= link_to "Cancel",
@@ -77,7 +80,11 @@
     <% else %>
       <% if message.content.present? %>
         <div class="message-body">
-          <%= simple_format(h(message.content), {}, wrapper_tag: "p") %>
+          <%= sanitize(
+                message.content,
+                tags: %w[div p br strong em del a code pre blockquote ul ol li],
+                attributes: %w[href target rel]
+              ) %>
         </div>
       <% end %>
 
@@ -102,7 +109,7 @@
 
     <div id="<%= dom_id(message, :replies) %>" class="message-replies">
       <% message.replies.each do |reply| %>
-        <%= render partial: "messages/message", locals: { message: reply, viewer: viewer } %>
+        <%= render partial: "messages/message", locals: { message: reply, viewer: viewer, matched_ids: matched_ids } %>
       <% end %>
     </div>
   </div>

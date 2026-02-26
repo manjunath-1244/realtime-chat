@@ -1,0 +1,48 @@
+<div class="audit-page">
+  <div class="audit-header">
+    <h2>Audit Logs</h2>
+    <%= link_to "Back to Rooms", rooms_path, class: "btn btn-secondary" %>
+  </div>
+
+  <div class="audit-card">
+    <table class="audit-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Event</th>
+          <th>User</th>
+          <th>Room</th>
+          <th>Record</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @audit_logs.each do |log| %>
+          <tr>
+            <td><%= log.created_at.strftime("%Y-%m-%d %I:%M:%S %p") %></td>
+            <td><span class="audit-event"><%= log.event_type %></span></td>
+            <td><%= log.user&.email || "-" %></td>
+            <td><%= log.room&.name || "-" %></td>
+            <td>
+              <% if log.auditable_type.present? && log.auditable_id.present? %>
+                <%= "#{log.auditable_type}##{log.auditable_id}" %>
+              <% else %>
+                -
+              <% end %>
+            </td>
+            <td>
+              <% if log.metadata.present? %>
+                <details class="audit-details">
+                  <summary>View</summary>
+                  <pre><%= JSON.pretty_generate(log.metadata.as_json) %></pre>
+                </details>
+              <% else %>
+                -
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
