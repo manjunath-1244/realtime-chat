@@ -432,6 +432,141 @@ h3,
   letter-spacing: 0.02em;
 }
 
+.message-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.message-tools form {
+  margin: 0;
+}
+
+.message-tool-btn {
+  border: 1px solid #dbe2ea;
+  background: #ffffff;
+  color: #334155;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  line-height: 1;
+  font-weight: 600;
+  padding: 5px 10px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+
+.message-tool-btn:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+.message-tool-btn-pin {
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.message-tool-btn-danger {
+  color: #b42318;
+  border-color: #fecaca;
+  background: #fff1f2;
+}
+
+.bubble-deleted {
+  opacity: 0.88;
+}
+
+.message-deleted-note {
+  font-size: 0.84rem;
+  color: #64748b;
+  font-style: italic;
+}
+
+.message-edited-tag {
+  margin-top: 8px;
+  font-size: 0.69rem;
+  color: #64748b;
+}
+
+.edit-message-form {
+  margin-top: 6px;
+}
+
+.edit-message-input {
+  width: 100%;
+  border: 1px solid #dbe2ea;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.92rem;
+  color: var(--text-main);
+  background: #ffffff;
+  resize: vertical;
+}
+
+.edit-message-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.edit-message-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.edit-message-save,
+.edit-message-cancel {
+  height: 34px;
+  padding: 0 12px;
+  font-size: 0.76rem;
+}
+
+.reply-details {
+  display: inline-block;
+}
+
+.reply-details summary {
+  list-style: none;
+}
+
+.reply-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.reply-form {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reply-input {
+  min-width: 180px;
+  border: 1px solid #dbe2ea;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 0.82rem;
+  background: #ffffff;
+}
+
+.reply-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.message-replies {
+  margin-top: 10px;
+  margin-left: 24px;
+  border-left: 2px solid #e2e8f0;
+  padding-left: 10px;
+}
+
 .message-body p {
   margin: 0;
   white-space: pre-wrap;

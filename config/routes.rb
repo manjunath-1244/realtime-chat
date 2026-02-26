@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   root "rooms#index"
 
   resources :rooms do
-    resources :messages, only: [:create, :destroy] do
+    resources :messages, only: [:create, :edit, :update, :destroy] do
       member do
         patch :pin
       end

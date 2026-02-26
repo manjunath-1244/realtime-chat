@@ -1,0 +1,4 @@
+<%= turbo_stream.replace dom_id(@message) do %>
+  <%= render partial: "messages/message",
+        locals: { message: @message, editing: true } %>
+<% end %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_02_25_160200) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_26_074500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -100,7 +100,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_25_160200) do
     t.datetime "pinned_at"
     t.datetime "edited_at"
     t.datetime "deleted_at"
+    t.bigint "parent_id"
     t.index ["deleted_at"], name: "index_messages_on_deleted_at"
+    t.index ["parent_id"], name: "index_messages_on_parent_id"
     t.index ["parent_message_id"], name: "index_messages_on_parent_message_id"
     t.index ["pinned"], name: "index_messages_on_pinned"
     t.index ["room_id"], name: "index_messages_on_room_id"
@@ -162,6 +164,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_25_160200) do
   add_foreign_key "message_reactions", "users"
   add_foreign_key "message_reads", "messages"
   add_foreign_key "message_reads", "users"
+  add_foreign_key "messages", "messages", column: "parent_id"
   add_foreign_key "messages", "messages", column: "parent_message_id"
   add_foreign_key "messages", "rooms"
   add_foreign_key "messages", "users"

@@ -1,3 +1,13 @@
+<% editing = local_assigns.fetch(:editing, false) %>
+<%
+  viewer = local_assigns[:viewer]
+  if viewer.nil? && defined?(request) && request&.env&.key?("warden")
+    viewer = current_user
+  end
+  show_member_tools = viewer ? message.room.users.include?(viewer) : true
+  show_modify_tools = viewer ? message.can_modify?(viewer) : true
+%>
+
 <div id="<%= dom_id(message) %>"
      class="message"
      data-user-id="<%= message.user_id %>">
@@ -13,31 +23,87 @@
       </div>
     </div>
 
-    <% if message.content.present? %>
-      <div class="message-body">
-        <%= simple_format(h(message.content), {}, wrapper_tag: "p") %>
-      </div>
-    <% end %>
+    <div class="message-tools">
+      <% if !editing %>
+        <details class="reply-details">
+          <summary class="message-tool-btn">Reply</summary>
+          <%= form_with model: [message.room, Message.new], class: "reply-form", html: { multipart: true } do |f| %>
+            <%= f.hidden_field :parent_id, value: message.id %>
+            <%= f.hidden_field :message_type, value: "text" %>
+            <%= f.text_field :content,
+                  placeholder: "Write a reply...",
+                  autocomplete: "off",
+                  class: "reply-input" %>
+            <%= f.submit "Send", class: "message-tool-btn message-tool-btn-pin" %>
+          <% end %>
+        </details>
+      <% end %>
 
-    <% if message.room.users.include?(current_user) %>
-      <%= button_to "📌 Pin",
-          pin_room_message_path(message.room, message),
-          method: :patch,
-          class: "btn btn-secondary" %>
-    <% end %>
+      <% if show_member_tools %>
+        <%= button_to "Pin",
+            pin_room_message_path(message.room, message),
+            method: :patch,
+            class: "message-tool-btn message-tool-btn-pin" %>
+      <% end %>
 
-    <% if message.file.attached? %>
-      <div class="attachment-card">
-        <% if message.file.content_type&.start_with?("image/") %>
-          <%= image_tag url_for(message.file), class: "attachment-image", alt: message.file.filename.to_s %>
-        <% else %>
-          <%= link_to message.file.filename.to_s, url_for(message.file), target: "_blank", class: "attachment-link" %>
-        <% end %>
-        <div class="attachment-meta">
-          <span><%= message.file.filename.to_s %></span>
-          <span><%= number_to_human_size(message.file.byte_size) %></span>
+      <% if show_modify_tools %>
+        <%= link_to "Edit",
+            edit_room_message_path(message.room, message),
+            class: "message-tool-btn",
+            data: { turbo_stream: true } %>
+
+        <%= button_to "Delete",
+            room_message_path(message.room, message),
+            method: :delete,
+            class: "message-tool-btn message-tool-btn-danger",
+            form: { data: { turbo_confirm: "Delete this message?" } } %>
+      <% end %>
+    </div>
+
+    <% if editing %>
+      <%= form_with model: [message.room, message],
+            class: "edit-message-form" do |f| %>
+        <%= f.text_area :content,
+              value: message.content,
+              rows: 3,
+              class: "edit-message-input" %>
+        <div class="edit-message-actions">
+          <%= f.submit "Save", class: "btn btn-primary edit-message-save" %>
+          <%= link_to "Cancel",
+              room_path(message.room),
+              class: "btn btn-secondary edit-message-cancel" %>
         </div>
-      </div>
+      <% end %>
+    <% else %>
+      <% if message.content.present? %>
+        <div class="message-body">
+          <%= simple_format(h(message.content), {}, wrapper_tag: "p") %>
+        </div>
+      <% end %>
+
+      <% if message.edited? %>
+        <div class="message-edited-tag">Edited</div>
+      <% end %>
+
+      <% if message.file.attached? %>
+        <div class="attachment-card">
+          <% if message.file.content_type&.start_with?("image/") %>
+            <%= image_tag url_for(message.file), class: "attachment-image", alt: message.file.filename.to_s %>
+          <% else %>
+            <%= link_to message.file.filename.to_s, url_for(message.file), target: "_blank", class: "attachment-link" %>
+          <% end %>
+          <div class="attachment-meta">
+            <span><%= message.file.filename.to_s %></span>
+            <span><%= number_to_human_size(message.file.byte_size) %></span>
+          </div>
+        </div>
+      <% end %>
     <% end %>
+
+    <div id="<%= dom_id(message, :replies) %>" class="message-replies">
+      <% message.replies.each do |reply| %>
+        <%= render partial: "messages/message", locals: { message: reply, viewer: viewer } %>
+      <% end %>
+    </div>
   </div>
 </div>
